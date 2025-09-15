@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String? // For credentials users
+  provider      String    @default("credentials") // 'credentials' or 'google'
+  providerId    String? // Google's user ID for OAuth
+  status        Int       @default(1)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  hubsOwned Hub[]
+}
+
+model Chat {
+  id        String   @id @default(cuid())
+  type      Int      @default(2) //1=direct, 2=hub
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Hub       Hub?
+}
+
+model Hub {
+  id          String   @id @default(cuid())
+  creatorId   String
+  chatId      String   @unique
+  name        String?
+  description String?
+  image       String?
+  code        String   @unique
+  type        Int      @default(1)
+  status      Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  chat    Chat @relation(fields: [chatId], references: [id])
+  creator User @relation(fields: [creatorId], references: [id])
+}
