@@ -37,7 +37,7 @@ export const signInUserAPI = async (
 };
 export const signUpUserAPI = async (
     data: SignUpData
-): Promise<AuthResponse> => {
+) => {
     console.log("dta:", data);
     const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER}/api/auth/signup`,
@@ -58,7 +58,7 @@ export const signUpUserAPI = async (
     return response.json();
 };
 
-export async function googleSignInAPI<T = unknown>(
+export async function googleSignInAPI(
     data: GoogleSignInData
 ): Promise<AuthResponse> {
     const response = await fetch(

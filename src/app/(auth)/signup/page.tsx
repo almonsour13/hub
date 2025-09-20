@@ -1,5 +1,4 @@
 "use client";
-import { useSession, signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -10,15 +9,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authSession } from "@/lib/session";
-import { useState } from "react";
-import Link from "next/link";
 import { useSignUpUser } from "@/hook/use-auth";
-import { error } from "console";
+import { signIn } from "next-auth/react";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function SignUpPage() {
-    const { user } = authSession();
-    const { mutate: signUp, isPending, error, isError, data } = useSignUpUser();
+    const { mutate: signUp, isPending, error, isError } = useSignUpUser();
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -32,7 +29,7 @@ export default function SignUpPage() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const res = await signUp(form);
+        await signUp(form);
         
         const signInResult = await signIn("credentials", {
             email: form.email,
@@ -101,7 +98,7 @@ export default function SignUpPage() {
                             />
                         </div>
                         <Button type="submit" className="w-full">
-                            Sign Up
+                            {isPending ? "Signing up..." : "Sign Up"}
                         </Button>
                     </form>
 

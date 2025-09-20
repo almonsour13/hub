@@ -1,5 +1,5 @@
 export default function Page(){
     return (
-        <div className="">hub</div>
+        <div className="">no selected chat</div>
     )
 }

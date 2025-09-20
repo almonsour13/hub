@@ -8,9 +8,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const prisma_1 = require("../lib/prisma");
 const register = async (req, res) => {
     try {
-        console.log(req.body);
         const { name, email, password } = req.body;
-        // Validate input
         if (!name || !email || !password) {
             return res
                 .status(400)

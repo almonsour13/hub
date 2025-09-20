@@ -5,51 +5,138 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+    provider = "sqlite"
+    url      = "file:./dev.db"
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  password      String? // For credentials users
-  provider      String    @default("credentials") // 'credentials' or 'google'
-  providerId    String? // Google's user ID for OAuth
-  status        Int       @default(1)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+    id            String    @id @default(cuid())
+    name          String?
+    email         String    @unique
+    emailVerified DateTime?
+    image         String?
+    password      String? // For credentials users
+    provider      String    @default("credentials") // 'credentials' or 'google'
+    providerId    String? // Google's user ID for OAuth
+    status        Int       @default(1)
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
 
-  hubsOwned Hub[]
-}
-
-model Chat {
-  id        String   @id @default(cuid())
-  type      Int      @default(2) //1=direct, 2=hub
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Hub       Hub?
+    hubsOwned      Hub[]
+    hubMemberships Member[]
+    messages       Message[]
+    pinnedMessages Message[]     @relation("MessagePinnedBy")
+    readReceipts   ReadReceipt[]
 }
 
 model Hub {
-  id          String   @id @default(cuid())
-  creatorId   String
-  chatId      String   @unique
-  name        String?
-  description String?
-  image       String?
-  code        String   @unique
-  type        Int      @default(1)
-  status      Int      @default(1)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+    id          String   @id @default(cuid())
+    creatorId   String
+    chatId      String?  @unique
+    name        String?
+    description String?
+    image       String?
+    code        String   @unique
+    type        Int      @default(1)
+    status      Int      @default(1)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 
-  chat    Chat @relation(fields: [chatId], references: [id])
-  creator User @relation(fields: [creatorId], references: [id])
+    creator User     @relation(fields: [creatorId], references: [id])
+    members Member[]
+    chat    Chat?    @relation(fields: [chatId], references: [id])
+}
+
+model Member {
+    id         String    @id @default(cuid())
+    hubId      String
+    userId     String
+    user       User      @relation(fields: [userId], references: [id])
+    nickname   String?
+    role       Int       @default(3)
+    status     Int       @default(1)
+    lastSeenId String? // messageId of last seen message
+    lastSeenAt DateTime? // when it was updated
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    hub             Hub      @relation(fields: [hubId], references: [id])
+    lastSeenMessage Message? @relation("LastSeen", fields: [lastSeenId], references: [id])
+
+    @@unique([hubId, userId])
+}
+
+model Chat {
+    id        String    @id @default(cuid())
+    type      Int       @default(2) //1=direct, 2=hub
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    messages  Message[]
+    Hub       Hub?
+}
+
+model Message {
+    id         String    @id @default(cuid())
+    chatId     String
+    senderId   String?
+    message    String?
+    type       Int       @default(1) // e.g. 1=text, 2=attachment, 4=system
+    status     Int       @default(1) // e.g. 1=active, 2=deleted,
+    replyToId  String? // ✅ reference to another message
+    pinnedById String? // user who pinned this message
+    pinnedAt   DateTime? // when it was pinned
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime  @updatedAt
+
+    // relations
+    chat         Chat          @relation(fields: [chatId], references: [id])
+    sender       User?         @relation(fields: [senderId], references: [id])
+    attachments  Attachment[]
+    // self-relation for replies
+    replyTo      Message?      @relation("MessageReplies", fields: [replyToId], references: [id])
+    replies      Message[]     @relation("MessageReplies")
+    pinnedBy     User?         @relation("MessagePinnedBy", fields: [pinnedById], references: [id])
+    edits        Edit[]
+    readReceipts ReadReceipt[]
+    lastSeenBy       Member[]      @relation("LastSeen")
+}
+
+model Edit {
+    id          String   @id @default(cuid())
+    messageId   String
+    prevMessage String
+    editedAt    DateTime @default(now())
+
+    Message Message @relation(fields: [messageId], references: [id])
+}
+
+model Attachment {
+    id        String   @id @default(cuid())
+    messageId String
+    data      Bytes // 🟢 raw file/image data stored here
+    type      Int // 1=image, 2=file, 3=video, 4=audio
+    size      Int? // file size in bytes
+    name      String? // original filename
+    mimeType  String? // like "image/png", "application/pdf"
+    createdAt DateTime @default(now())
+
+    message Message @relation(fields: [messageId], references: [id])
+}
+
+model ReadReceipt {
+    id        String   @id @default(cuid())
+    messageId String
+    userId    String
+    readAt    DateTime @default(now())
+    createdAt DateTime @default(now())
+
+    message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([messageId, userId])
 }

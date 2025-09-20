@@ -4,6 +4,8 @@ import "./globals.css";
 import { AuthSessionProvider } from "@/components/provider/session-provider";
 import { ThemeProvider } from "@/components/provider/theme-provider";
 import { ReactQueryProvider } from "@/components/provider/react-query-provider";
+import { Toaster } from "@/components/ui/sonner";
+import { WebSocketProvider } from "@/context/websocket-context";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -38,10 +40,11 @@ export default function RootLayout({
                             enableSystem
                             disableTransitionOnChange
                         >
-                            {children}
+                            <WebSocketProvider>{children}</WebSocketProvider>
                         </ThemeProvider>
                     </ReactQueryProvider>
                 </AuthSessionProvider>
+                <Toaster />
             </body>
         </html>
     );
