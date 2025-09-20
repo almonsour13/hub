@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Textarea } from "../ui/textarea";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import { toast } from "sonner";
 import { useCreateHub } from "@/hook/use-hub";
 
@@ -29,7 +29,7 @@ export default function CreateHubModal({
     showCreateHubModal,
     setShowCreateHubModal,
 }: CreateHubProps) {
-    const { user } = authSession();
+    const { user } = useAuthSession();
     const [form, setForm] = useState({
         name: "",
         description: "",
@@ -58,8 +58,8 @@ export default function CreateHubModal({
                     );
                     setForm({ name: "", description: "" });
                 },
-                onError: (error: any) => {
-                    toast.error(error.message || "Failed to create hub.");
+                onError: () => {
+                    toast.error("Failed to create hub.");
                 },
             }
         );

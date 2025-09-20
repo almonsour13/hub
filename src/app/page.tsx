@@ -1,10 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import Link from "next/link";
 
 export default function Home() {
-    const { user } = authSession();
+    const { user } = useAuthSession();
     return (
         <div className="min-h-screen bg-background">
             <div className="sticky top-0 h-14 w-full flex items-center  border-b px-4">

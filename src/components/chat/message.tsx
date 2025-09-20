@@ -2,7 +2,7 @@
 import { useWebSocket } from "@/context/websocket-context";
 import { useJumpToMessageHandler } from "@/hook/use-jump-to-message-handler";
 import { useMessageVisibility } from "@/hook/use-message-receipt";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import { Message } from "@/store/use-chat-messages";
 import { useMessageEditStore } from "@/store/use-message-edit";
 import { useMessageReplyStore } from "@/store/use-message-reply";
@@ -38,7 +38,7 @@ export default function MessageBubble({
 }: MessageBubbleProps) {
     const { editMessage } = useMessageEditStore();
     const [showEditHistory, setShowEditHistory] = useState(false);
-    const { user } = authSession();
+    const { user } = useAuthSession();
     const sender = message.sender;
     const messageRef = useMessageVisibility(message);
     const { jumpToMessage } = useJumpToMessageHandler();
@@ -419,7 +419,7 @@ interface ActionButtonProps {
 
 const ActionButton = ({ message }: ActionButtonProps) => {
     const { ws } = useWebSocket();
-    const { user } = authSession();
+    const { user } = useAuthSession();
     const { setReplyingTo } = useMessageReplyStore();
     const { setEditMessage } = useMessageEditStore();
 

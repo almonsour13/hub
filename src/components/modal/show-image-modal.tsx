@@ -14,6 +14,8 @@ export function ShowImageModal({attachment}: ShowImageModalProps) {
                     <Image
                         src={attachment.url}
                         alt={attachment.name}
+                        width={200}
+                        height={200}
                         className="max-h-32 w-auto object-cover"
                     />
                     <div className="absolute inset-0 z-10 hidden bg-black/30 group-hover:block"></div>
@@ -23,6 +25,8 @@ export function ShowImageModal({attachment}: ShowImageModalProps) {
                 <Image
                     src={attachment.url}
                     alt={attachment.name}
+                    width={2000}
+                    height={2000}
                     className="max-h-[80vh] w-auto mx-auto rounded object-contain"
                 />
             </DialogContent>

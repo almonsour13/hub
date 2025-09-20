@@ -1,10 +1,10 @@
 import { useJumpToMessage } from "@/hook/use-messages";
 import { highlightMessage } from "@/util/high-light-message";
 import { useChatMessagesStore } from "@/store/use-chat-messages";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 
 export const useJumpToMessageHandler = () => {
-    const {user} = authSession();
+    const {user} = useAuthSession();
     const { mutate: jumpToMessageAPI } = useJumpToMessage();
     const {
         messages,

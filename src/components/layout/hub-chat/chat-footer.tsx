@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useWebSocket } from "@/context/websocket-context";
 import { uploadAttachment } from "@/lib/api/message";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import { Message, useChatMessagesStore } from "@/store/use-chat-messages";
 import { useMessageEditStore } from "@/store/use-message-edit";
 import { useMessageReplyStore } from "@/store/use-message-reply";
@@ -19,7 +19,7 @@ interface Attachment {
     file: File;
 }
 export default function ChatFooter() {
-    const { user } = authSession();
+    const { user } = useAuthSession();
     const { editMessage, setEditMessage } = useMessageEditStore();
     const chatId = useParams().chatId as string;
     const [message, setMessage] = useState("");
@@ -246,6 +246,8 @@ export default function ChatFooter() {
                                         src={att.url}
                                         alt={att.file.name}
                                         className="max-w-auto max-h-20 object-cover rounded"
+                                        width={80}
+                                        height={80}
                                     />
                                     <Button
                                         variant="ghost"

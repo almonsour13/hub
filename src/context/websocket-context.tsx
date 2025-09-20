@@ -1,7 +1,7 @@
 // context/WebSocketContext.tsx
 "use client";
 
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import { getSocket } from "@/lib/socket";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
@@ -14,7 +14,7 @@ const WebSocketContext = createContext<WebSocketContextType | undefined>(
 );
 
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
-    const {user} = authSession();
+    const {user} = useAuthSession();
     const [ws, setWs] = useState<WebSocket | null>(null);
 
     useEffect(() => {

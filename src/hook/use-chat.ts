@@ -12,8 +12,5 @@ export const useChatList = () => {
                 queryClient.invalidateQueries({ queryKey: ["chatList"] });
             }
         },
-        onError: (error: any) => {
-            console.error("Create hub error:", error);
-        },
     });
 };

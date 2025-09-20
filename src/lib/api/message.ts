@@ -96,9 +96,16 @@ export const jumpToMessageAndLoad = async (
 /**
  * Upload attachments with optional text message
  */
+export interface UploadAttachmentResult {
+    success: boolean;
+    message?: string;
+    error?: string;
+    attachmentIds?: string[];
+}
+
 export const uploadAttachment = async (
     data: UploadAttachmentData
-): Promise<any> => {
+): Promise<UploadAttachmentResult> => {
     const { chatId, userId, message, replyToId, attachments, tempId } = data;
     const formData = new FormData();
 
@@ -113,7 +120,7 @@ export const uploadAttachment = async (
 
     const url = `${process.env.NEXT_PUBLIC_SERVER}/api/chat/${userId}/${chatId}/attachment/upload`;
 
-    return fetchJson<any>(url, {
+    return fetchJson<UploadAttachmentResult>(url, {
         method: "POST",
         body: formData,
     });

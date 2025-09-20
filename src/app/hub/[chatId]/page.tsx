@@ -4,14 +4,14 @@ import ChatContent from "@/components/layout/hub-chat/chat-content";
 import ChatFooter from "@/components/layout/hub-chat/chat-footer";
 import ChatHeader from "@/components/layout/hub-chat/chat-header";
 import { useWebSocket } from "@/context/websocket-context";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import { useChatInfoStore } from "@/store/use-chat-info";
 import { useParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 export default function Page() {
     const chatId = useParams().chatId as string;
-    const { user } = authSession();
+    const { user } = useAuthSession();
     const { ws } = useWebSocket();
     const {isVisible} = useChatInfoStore();
     const messageHandlerRef = useRef<((event: MessageEvent) => void) | null>(

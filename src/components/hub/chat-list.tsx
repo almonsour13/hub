@@ -2,7 +2,7 @@
 
 import { useWebSocket } from "@/context/websocket-context";
 import { useChatList } from "@/hook/use-chat";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import { useChatListStore } from "@/store/use-chat-list";
 import { format } from "date-fns";
 import Link from "next/link";
@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 export default function ChatList() {
-    const { user } = authSession();
+    const { user } = useAuthSession();
     const { mutate: loadChatList, isPending } = useChatList();
     const { chatList, setChatList, updateChatList } = useChatListStore();
     const { ws } = useWebSocket();

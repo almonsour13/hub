@@ -3,7 +3,7 @@ import MessageSearchResult from "@/components/message-search-result";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSearchMessages } from "@/hook/use-messages";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import { useChatInfoStore } from "@/store/use-chat-info";
 import { Message } from "@/store/use-chat-messages";
 import { Info, Pin, Search, Users, X } from "lucide-react";
@@ -15,7 +15,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 // Message result component
 
 export default function ChatHeader() {
-    const { user } = authSession();
+    const { user } = useAuthSession();
     const chatId = useParams().chatId as string;
     const { toggle } = useChatInfoStore();
     const [search, setSearch] = useState("");

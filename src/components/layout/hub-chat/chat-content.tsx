@@ -3,7 +3,7 @@ import MessageBubble from "@/components/chat/message";
 import MessageDateSeperator from "@/components/chat/message-date-separator";
 import { useWebSocket } from "@/context/websocket-context";
 import { useJumpToMessage, useMessages } from "@/hook/use-messages";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import {
     Message,
     Sender,
@@ -17,7 +17,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export default function ChatContent() {
-    const { user } = authSession();
+    const { user } = useAuthSession();
     const chatId = useParams().chatId as string;
     const {
         messages,
@@ -30,8 +30,7 @@ export default function ChatContent() {
     const { editMessage } = useMessageEditStore();
     const { ws } = useWebSocket();
     const { mutate: loadMessage, isPending } = useMessages();
-    const {isPending: isJumping } =
-        useJumpToMessage();
+    const { isPending: isJumping } = useJumpToMessage();
 
     const messageHandlerRef = useRef<((event: MessageEvent) => void) | null>(
         null
@@ -79,7 +78,15 @@ export default function ChatContent() {
                 }
             );
         }
-    }, [user, chatId, loadMessage, setMessages, messages, setHasMoreMessages, setNextCursor]);
+    }, [
+        user,
+        chatId,
+        loadMessage,
+        setMessages,
+        messages,
+        setHasMoreMessages,
+        setNextCursor,
+    ]);
     const loadMoreMessages = () => {
         if (!user || !nextCursor || isLoadingMore) return;
 
@@ -128,8 +135,7 @@ export default function ChatContent() {
                 const type = parseData.type;
                 const data = parseData.data;
                 if (type === "chat-activity") {
-                    const { action,  senderId } =
-                        data;
+                    const { action, senderId } = data;
                     if (action === "typing") {
                         const { isTyping, sender } = data;
                         setTyping((prev) => {
@@ -145,7 +151,9 @@ export default function ChatContent() {
                         });
                     }
                 }
-            } catch (error) {}
+            } catch (error) {
+                console.error("Error parsing WebSocket message:", error);
+            }
         };
 
         messageHandlerRef.current = handleChatActivty;
@@ -163,12 +171,13 @@ export default function ChatContent() {
     const groupMessagesByDate = (messages: Message[]) => {
         const groups: { [key: string]: Message[] } = {};
 
-        messages &&
-            messages.forEach((message) => {
-                const date = format(new Date(message.createdAt), "yyyy-MM-dd");
-                if (!groups[date]) groups[date] = [];
-                groups[date].push(message);
-            });
+        if (!messages) return groups;
+
+        messages.forEach((message) => {
+            const date = format(new Date(message.createdAt), "yyyy-MM-dd");
+            if (!groups[date]) groups[date] = [];
+            groups[date].push(message);
+        });
 
         return groups;
     };

@@ -2,7 +2,7 @@
 "use client";
 // 1. Add this hook to track message visibility
 import { useWebSocket } from "@/context/websocket-context";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import { Message } from "@/store/use-chat-messages";
 import { useEffect, useRef } from "react";
 
@@ -10,7 +10,7 @@ import { useEffect, useRef } from "react";
 export const useMessageVisibility = (message: Message) => {
     const { id: messageId, chatId } = message;
     const { ws } = useWebSocket();
-    const { user } = authSession();
+    const { user } = useAuthSession();
     const elementRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {

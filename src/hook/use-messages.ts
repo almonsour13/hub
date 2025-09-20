@@ -10,9 +10,6 @@ export const useMessages = () => {
                 queryClient.invalidateQueries({ queryKey: ["messages"] });
             }
         },
-        onError: (error: any) => {
-            console.error("Create hub error:", error);
-        },
     });
 };
 

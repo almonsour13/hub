@@ -30,8 +30,12 @@ export const signInUserAPI = async (
 
         // ✅ always return parsed JSON
         return response.json();
-    } catch (error: any) {
-        console.error("Sign in error:", error.message);
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error("Sign in error:", error.message);
+        } else {
+            console.error("Sign in error:", error);
+        }
         throw error;
     }
 };

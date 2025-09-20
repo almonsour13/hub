@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Message } from "./use-chat-messages";
+import { Hub } from "@/type/hub";
 
 interface LastActivity {
     hub: {
@@ -24,7 +25,7 @@ interface ChatListStore {
 export const useChatListStore = create<ChatListStore>((set) => ({
     chatList: [],
     setChatList: (chatList) => set({ chatList }),
-    updateChatList: (chatId: string, lastMessage: any, hub?: any) =>
+    updateChatList: (chatId: string, lastMessage: Message, hub?: Hub) =>
         set((state) => {
             const existingIndex = state.chatList.findIndex(
                 (c) => c.id === chatId
@@ -38,11 +39,10 @@ export const useChatListStore = create<ChatListStore>((set) => ({
                               ...chat,
                               lastActivity: {
                                   hub: hub
-                                      ? { ...hub }
-                                      : { ...chat.lastActivity.hub },
-                                  message: lastMessage
-                                      ? { ...lastMessage }
-                                      : { ...chat.lastActivity.message },
+                                      ? { name: hub.name } // ✅ only keep name
+                                      : chat.lastActivity.hub,
+                                  message:
+                                      lastMessage ?? chat.lastActivity.message,
                               },
                               updatedAt: new Date(),
                           }
@@ -55,8 +55,8 @@ export const useChatListStore = create<ChatListStore>((set) => ({
                         id: chatId,
                         type: 1,
                         lastActivity: {
-                            hub: hub ? { ...hub } : null,
-                            message: lastMessage ? { ...lastMessage } : null,
+                            hub: hub ? { name: hub.name } : null, // ✅ only keep name
+                            message: lastMessage ?? null,
                         },
                         updatedAt: new Date(),
                     },
@@ -64,13 +64,7 @@ export const useChatListStore = create<ChatListStore>((set) => ({
             }
 
             updatedChatList.sort((a, b) => {
-                const aDate = a.updatedAt
-                    ? new Date(a.updatedAt).getTime()
-                    : 0;
-                const bDate = b.updatedAt
-                    ? new Date(b.updatedAt).getTime()
-                    : 0;
-                return bDate - aDate;
+                return b.updatedAt.getTime() - a.updatedAt.getTime();
             });
 
             return { chatList: updatedChatList };

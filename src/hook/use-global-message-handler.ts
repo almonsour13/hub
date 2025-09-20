@@ -1,14 +1,14 @@
 // hooks/use-global-message-handler.ts
 import { useEffect, useRef } from "react";
 import { useWebSocket } from "@/context/websocket-context";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import { useChatMessagesStore } from "@/store/use-chat-messages";
 
 /**
  * Global message handler that updates messages regardless of which chat is currently open
  */
 export const useGlobalMessageHandler = () => {
-    const { user } = authSession();
+    const { user } = useAuthSession();
     const { ws } = useWebSocket();
     const messageHandlerRef = useRef<((event: MessageEvent) => void) | null>(
         null

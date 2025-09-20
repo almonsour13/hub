@@ -2,7 +2,7 @@ import { Plus, Users } from "lucide-react";
 import { Button } from "../ui/button";
 import ChatList from "./chat-list";
 import { signOut } from "next-auth/react";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import { useTheme } from "next-themes";
 
 interface Sidebar {
@@ -14,7 +14,7 @@ export default function Sidebar({
     setShowCreateHubModal,
     setShowJoinHubModal,
 }: Sidebar) {
-    const { user } = authSession();
+    const { user } = useAuthSession();
     const {theme, setTheme} = useTheme();
     return (
         <div className=" w-64 h-screen flex flex-col border-border/50 border-r">

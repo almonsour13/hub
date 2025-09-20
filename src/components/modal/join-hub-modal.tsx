@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useJoinHub } from "@/hook/use-hub";
-import { authSession } from "@/lib/session";
+import { useAuthSession } from "@/lib/session";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -28,7 +28,7 @@ export default function JoinHubModal({
     showJoinHubModal,
     setShowJoinHubModal,
 }: CreateHubProps) {
-    const { user } = authSession();
+    const { user } = useAuthSession();
     const [form, setForm] = useState({
         code: "",
     });
@@ -56,8 +56,8 @@ export default function JoinHubModal({
                     );
                     setForm({ code: "" });
                 },
-                onError: (error: any) => {
-                    toast.error(error.message || "Failed to create hub.");
+                onError: () => {
+                    toast.error("Failed to create hub.");
                 },
             }
         );
